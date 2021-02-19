@@ -114,14 +114,6 @@ function getViewerConfiguration() {
       outerContainer: document.getElementById("outerContainer"),
       resizer: document.getElementById("sidebarResizer"),
     },
-    passwordOverlay: {
-      overlayName: "passwordOverlay",
-      container: document.getElementById("passwordOverlay"),
-      label: document.getElementById("passwordText"),
-      input: document.getElementById("password"),
-      submitButton: document.getElementById("passwordSubmit"),
-      cancelButton: document.getElementById("passwordCancel"),
-    },
     documentProperties: {
       overlayName: "documentPropertiesOverlay",
       container: document.getElementById("documentPropertiesOverlay"),

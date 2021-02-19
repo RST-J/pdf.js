@@ -58,7 +58,6 @@ import {
 import { CursorTool, PDFCursorTools } from "./pdf_cursor_tools.js";
 import { PDFRenderingQueue, RenderingStates } from "./pdf_rendering_queue.js";
 import { OverlayManager } from "./overlay_manager.js";
-import { PasswordPrompt } from "./password_prompt.js";
 import { PDFAttachmentViewer } from "./pdf_attachment_viewer.js";
 import { PDFDocumentProperties } from "./pdf_document_properties.js";
 import { PDFHistory } from "./pdf_history.js";
@@ -533,12 +532,6 @@ const PDFViewerApplication = {
       });
     }
 
-    this.passwordPrompt = new PasswordPrompt(
-      appConfig.passwordOverlay,
-      this.overlayManager,
-      this.l10n
-    );
-
     this.pdfOutlineViewer = new PDFOutlineViewer({
       container: appConfig.sidebar.outlineView,
       eventBus,
@@ -900,8 +893,7 @@ const PDFViewerApplication = {
 
     loadingTask.onPassword = (updateCallback, reason) => {
       this.pdfLinkService.externalLinkEnabled = false;
-      this.passwordPrompt.setUpdateCallback(updateCallback, reason);
-      this.passwordPrompt.open();
+      console.log("Error! Password protected file.");
     };
 
     loadingTask.onProgress = ({ loaded, total }) => {
