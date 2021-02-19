@@ -72,9 +72,7 @@
   --toolbarButton-download-icon: url(images/toolbarButton-download.svg);
   --toolbarButton-bookmark-icon: url(images/toolbarButton-bookmark.svg);
   --toolbarButton-viewThumbnail-icon: url(images/toolbarButton-viewThumbnail.svg);
-  --toolbarButton-viewOutline-icon: url(images/toolbarButton-viewOutline.svg);
   --toolbarButton-viewLayers-icon: url(images/toolbarButton-viewLayers.svg);
-  --toolbarButton-currentOutlineItem-icon: url(images/toolbarButton-currentOutlineItem.svg);
   --toolbarButton-search-icon: url(images/toolbarButton-search.svg);
 }
 
@@ -787,25 +785,9 @@ html[dir="rtl"] .toolbarButton#sidebarToggle::before {
   mask-image: var(--toolbarButton-viewThumbnail-icon);
 }
 
-#viewOutline.toolbarButton::before {
-  -webkit-mask-image: var(--toolbarButton-viewOutline-icon);
-  mask-image: var(--toolbarButton-viewOutline-icon);
-}
-html[dir="rtl"] #viewOutline.toolbarButton::before {
-  transform: scaleX(-1);
-}
-
 #viewLayers.toolbarButton::before {
   -webkit-mask-image: var(--toolbarButton-viewLayers-icon);
   mask-image: var(--toolbarButton-viewLayers-icon);
-}
-
-#currentOutlineItem.toolbarButton::before {
-  -webkit-mask-image: var(--toolbarButton-currentOutlineItem-icon);
-  mask-image: var(--toolbarButton-currentOutlineItem-icon);
-}
-html[dir="rtl"] #currentOutlineItem.toolbarButton::before {
-  transform: scaleX(-1);
 }
 
 #viewFind.toolbarButton::before {
@@ -999,17 +981,6 @@ a:focus > .thumbnail > .thumbnailSelectionRing,
   background-color: var(--sidebaritem-bg-color);
   background-clip: padding-box;
   color: rgba(255, 255, 255, 1);
-}
-
-#outlineView {
-  position: absolute;
-  width: calc(100% - 8px);
-  top: 0;
-  bottom: 0;
-  padding: 4px 4px 0;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-  user-select: none;
 }
 
 html[dir="ltr"] .treeWithDeepNesting > .treeItem,

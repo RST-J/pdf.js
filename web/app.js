@@ -60,7 +60,6 @@ import { PDFRenderingQueue, RenderingStates } from "./pdf_rendering_queue.js";
 import { OverlayManager } from "./overlay_manager.js";
 import { PDFHistory } from "./pdf_history.js";
 import { PDFLinkService } from "./pdf_link_service.js";
-import { PDFOutlineViewer } from "./pdf_outline_viewer.js";
 import { PDFPresentationMode } from "./pdf_presentation_mode.js";
 import { PDFSidebar } from "./pdf_sidebar.js";
 import { PDFSidebarResizer } from "./pdf_sidebar_resizer.js";
@@ -208,8 +207,6 @@ const PDFViewerApplication = {
   pdfSidebar: null,
   /** @type {PDFSidebarResizer} */
   pdfSidebarResizer: null,
-  /** @type {PDFOutlineViewer} */
-  pdfOutlineViewer: null,
   /** @type {PDFCursorTools} */
   pdfCursorTools: null,
   /** @type {ViewHistory} */
@@ -516,12 +513,6 @@ const PDFViewerApplication = {
       });
     }
 
-    this.pdfOutlineViewer = new PDFOutlineViewer({
-      container: appConfig.sidebar.outlineView,
-      eventBus,
-      linkService: pdfLinkService,
-    });
-
     this.pdfSidebar = new PDFSidebar({
       elements: appConfig.sidebar,
       pdfViewer: this.pdfViewer,
@@ -789,7 +780,6 @@ const PDFViewerApplication = {
     promises.push(this._destroyScriptingInstance());
 
     this.pdfSidebar.reset();
-    this.pdfOutlineViewer.reset();
 
     if (this.pdfHistory) {
       this.pdfHistory.reset();
@@ -1350,9 +1340,6 @@ const PDFViewerApplication = {
     });
 
     onePageRendered.then(() => {
-      pdfDocument.getOutline().then(outline => {
-        this.pdfOutlineViewer.render({ outline, pdfDocument });
-      });
       if ("requestIdleCallback" in window) {
         const callback = window.requestIdleCallback(
           () => {
@@ -2534,10 +2521,6 @@ function webViewerPageMode({ mode }) {
     case "thumbs":
       view = SidebarView.THUMBS;
       break;
-    case "bookmarks":
-    case "outline": // non-standard
-      view = SidebarView.OUTLINE;
-      break;
     case "none":
       view = SidebarView.NONE;
       break;
@@ -3245,8 +3228,6 @@ function apiPageModeToSidebarView(mode) {
       return SidebarView.NONE;
     case "UseThumbs":
       return SidebarView.THUMBS;
-    case "UseOutlines":
-      return SidebarView.OUTLINE;
     case "UseOC":
       return SidebarView.LAYERS;
   }

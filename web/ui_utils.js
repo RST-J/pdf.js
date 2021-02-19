@@ -36,7 +36,6 @@ const SidebarView = {
   UNKNOWN: -1,
   NONE: 0,
   THUMBS: 1, // Default value.
-  OUTLINE: 2,
 };
 
 const RendererType = {

@@ -37,16 +37,8 @@ const UI_NOTIFICATION_CLASS = "pdfSidebarNotification";
  *   opening/closing the sidebar.
  * @property {HTMLButtonElement} thumbnailButton - The button used to show
  *   the thumbnail view.
- * @property {HTMLButtonElement} outlineButton - The button used to show
- *   the outline view.
  * @property {HTMLDivElement} thumbnailView - The container in which
  *   the thumbnails are placed.
- * @property {HTMLDivElement} outlineView - The container in which
- *   the outline is placed.
- * @property {HTMLDivElement} outlineOptionsContainer - The container in which
- *   the outline view-specific option button(s) are placed.
- * @property {HTMLButtonElement} currentOutlineItemButton - The button used to
- *   find the current outline item.
  */
 
 class PDFSidebar {
@@ -78,13 +70,8 @@ class PDFSidebar {
     this.toggleButton = elements.toggleButton;
 
     this.thumbnailButton = elements.thumbnailButton;
-    this.outlineButton = elements.outlineButton;
 
     this.thumbnailView = elements.thumbnailView;
-    this.outlineView = elements.outlineView;
-
-    this._outlineOptionsContainer = elements.outlineOptionsContainer;
-    this._currentOutlineItemButton = elements.currentOutlineItemButton;
 
     this.eventBus = eventBus;
     this.l10n = l10n;
@@ -97,9 +84,6 @@ class PDFSidebar {
 
     this._hideUINotification(/* reset = */ true);
     this.switchView(SidebarView.THUMBS);
-
-    this.outlineButton.disabled = false;
-    this._currentOutlineItemButton.disabled = true;
   }
 
   /**
@@ -111,10 +95,6 @@ class PDFSidebar {
 
   get isThumbnailViewVisible() {
     return this.isOpen && this.active === SidebarView.THUMBS;
-  }
-
-  get isOutlineViewVisible() {
-    return this.isOpen && this.active === SidebarView.OUTLINE;
   }
 
   get isLayersViewVisible() {
@@ -174,11 +154,6 @@ class PDFSidebar {
           shouldForceRendering = true;
         }
         break;
-      case SidebarView.OUTLINE:
-        if (this.outlineButton.disabled) {
-          return false;
-        }
-        break;
       default:
         console.error(`PDFSidebar._switchView: "${view}" is not a valid view.`);
         return false;
@@ -192,19 +167,8 @@ class PDFSidebar {
       "toggled",
       view === SidebarView.THUMBS
     );
-    this.outlineButton.classList.toggle(
-      "toggled",
-      view === SidebarView.OUTLINE
-    );
     // ... and for all views.
     this.thumbnailView.classList.toggle("hidden", view !== SidebarView.THUMBS);
-    this.outlineView.classList.toggle("hidden", view !== SidebarView.OUTLINE);
-
-    // Finally, update view-specific CSS classes.
-    this._outlineOptionsContainer.classList.toggle(
-      "hidden",
-      view !== SidebarView.OUTLINE
-    );
 
     if (forceOpen && !this.isOpen) {
       this.open();
@@ -360,18 +324,6 @@ class PDFSidebar {
       this.switchView(SidebarView.THUMBS);
     });
 
-    this.outlineButton.addEventListener("click", () => {
-      this.switchView(SidebarView.OUTLINE);
-    });
-    this.outlineButton.addEventListener("dblclick", () => {
-      this.eventBus.dispatch("toggleoutlinetree", { source: this });
-    });
-
-    // Buttons for view-specific options.
-    this._currentOutlineItemButton.addEventListener("click", () => {
-      this.eventBus.dispatch("currentoutlineitem", { source: this });
-    });
-
     // Disable/enable views.
     const onTreeLoaded = (count, button, view) => {
       button.disabled = !count;
@@ -384,16 +336,6 @@ class PDFSidebar {
         this.switchView(SidebarView.THUMBS);
       }
     };
-
-    this.eventBus._on("outlineloaded", evt => {
-      onTreeLoaded(evt.outlineCount, this.outlineButton, SidebarView.OUTLINE);
-
-      if (evt.enableCurrentOutlineItemButton) {
-        this.pdfViewer.pagesPromise.then(() => {
-          this._currentOutlineItemButton.disabled = !this.isInitialViewSet;
-        });
-      }
-    });
 
     // Update the thumbnailViewer, if visible, when exiting presentation mode.
     this.eventBus._on("presentationmodechanged", evt => {
