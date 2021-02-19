@@ -1001,8 +1001,7 @@ a:focus > .thumbnail > .thumbnailSelectionRing,
   color: rgba(255, 255, 255, 1);
 }
 
-#outlineView,
-#layersView {
+#outlineView {
   position: absolute;
   width: calc(100% - 8px);
   top: 0;
@@ -1044,16 +1043,6 @@ html[dir="ltr"] .treeItem > a {
 }
 html[dir="rtl"] .treeItem > a {
   padding: 2px 4px 5px 0;
-}
-
-#layersView .treeItem > a > * {
-  cursor: pointer;
-}
-html[dir="ltr"] #layersView .treeItem > a > label {
-  padding-left: 4px;
-}
-html[dir="rtl"] #layersView .treesItem > a > label {
-  padding-right: 4px;
 }
 
 .treeItemToggler {

@@ -39,14 +39,10 @@ const UI_NOTIFICATION_CLASS = "pdfSidebarNotification";
  *   the thumbnail view.
  * @property {HTMLButtonElement} outlineButton - The button used to show
  *   the outline view.
- * @property {HTMLButtonElement} layersButton - The button used to show
- *   the layers view.
  * @property {HTMLDivElement} thumbnailView - The container in which
  *   the thumbnails are placed.
  * @property {HTMLDivElement} outlineView - The container in which
  *   the outline is placed.
- * @property {HTMLDivElement} layersView - The container in which
- *   the layers are placed.
  * @property {HTMLDivElement} outlineOptionsContainer - The container in which
  *   the outline view-specific option button(s) are placed.
  * @property {HTMLButtonElement} currentOutlineItemButton - The button used to
@@ -83,11 +79,9 @@ class PDFSidebar {
 
     this.thumbnailButton = elements.thumbnailButton;
     this.outlineButton = elements.outlineButton;
-    this.layersButton = elements.layersButton;
 
     this.thumbnailView = elements.thumbnailView;
     this.outlineView = elements.outlineView;
-    this.layersView = elements.layersView;
 
     this._outlineOptionsContainer = elements.outlineOptionsContainer;
     this._currentOutlineItemButton = elements.currentOutlineItemButton;
@@ -105,7 +99,6 @@ class PDFSidebar {
     this.switchView(SidebarView.THUMBS);
 
     this.outlineButton.disabled = false;
-    this.layersButton.disabled = false;
     this._currentOutlineItemButton.disabled = true;
   }
 
@@ -186,11 +179,6 @@ class PDFSidebar {
           return false;
         }
         break;
-      case SidebarView.LAYERS:
-        if (this.layersButton.disabled) {
-          return false;
-        }
-        break;
       default:
         console.error(`PDFSidebar._switchView: "${view}" is not a valid view.`);
         return false;
@@ -208,11 +196,9 @@ class PDFSidebar {
       "toggled",
       view === SidebarView.OUTLINE
     );
-    this.layersButton.classList.toggle("toggled", view === SidebarView.LAYERS);
     // ... and for all views.
     this.thumbnailView.classList.toggle("hidden", view !== SidebarView.THUMBS);
     this.outlineView.classList.toggle("hidden", view !== SidebarView.OUTLINE);
-    this.layersView.classList.toggle("hidden", view !== SidebarView.LAYERS);
 
     // Finally, update view-specific CSS classes.
     this._outlineOptionsContainer.classList.toggle(
@@ -381,13 +367,6 @@ class PDFSidebar {
       this.eventBus.dispatch("toggleoutlinetree", { source: this });
     });
 
-    this.layersButton.addEventListener("click", () => {
-      this.switchView(SidebarView.LAYERS);
-    });
-    this.layersButton.addEventListener("dblclick", () => {
-      this.eventBus.dispatch("resetlayers", { source: this });
-    });
-
     // Buttons for view-specific options.
     this._currentOutlineItemButton.addEventListener("click", () => {
       this.eventBus.dispatch("currentoutlineitem", { source: this });
@@ -414,10 +393,6 @@ class PDFSidebar {
           this._currentOutlineItemButton.disabled = !this.isInitialViewSet;
         });
       }
-    });
-
-    this.eventBus._on("layersloaded", evt => {
-      onTreeLoaded(evt.layersCount, this.layersButton, SidebarView.LAYERS);
     });
 
     // Update the thumbnailViewer, if visible, when exiting presentation mode.

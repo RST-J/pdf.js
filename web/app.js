@@ -59,7 +59,6 @@ import { CursorTool, PDFCursorTools } from "./pdf_cursor_tools.js";
 import { PDFRenderingQueue, RenderingStates } from "./pdf_rendering_queue.js";
 import { OverlayManager } from "./overlay_manager.js";
 import { PDFHistory } from "./pdf_history.js";
-import { PDFLayerViewer } from "./pdf_layer_viewer.js";
 import { PDFLinkService } from "./pdf_link_service.js";
 import { PDFOutlineViewer } from "./pdf_outline_viewer.js";
 import { PDFPresentationMode } from "./pdf_presentation_mode.js";
@@ -211,8 +210,6 @@ const PDFViewerApplication = {
   pdfSidebarResizer: null,
   /** @type {PDFOutlineViewer} */
   pdfOutlineViewer: null,
-  /** @type {PDFLayerViewer} */
-  pdfLayerViewer: null,
   /** @type {PDFCursorTools} */
   pdfCursorTools: null,
   /** @type {ViewHistory} */
@@ -525,12 +522,6 @@ const PDFViewerApplication = {
       linkService: pdfLinkService,
     });
 
-    this.pdfLayerViewer = new PDFLayerViewer({
-      container: appConfig.sidebar.layersView,
-      eventBus,
-      l10n: this.l10n,
-    });
-
     this.pdfSidebar = new PDFSidebar({
       elements: appConfig.sidebar,
       pdfViewer: this.pdfViewer,
@@ -799,7 +790,6 @@ const PDFViewerApplication = {
 
     this.pdfSidebar.reset();
     this.pdfOutlineViewer.reset();
-    this.pdfLayerViewer.reset();
 
     if (this.pdfHistory) {
       this.pdfHistory.reset();
@@ -1362,11 +1352,6 @@ const PDFViewerApplication = {
     onePageRendered.then(() => {
       pdfDocument.getOutline().then(outline => {
         this.pdfOutlineViewer.render({ outline, pdfDocument });
-      });
-      // Ensure that the layers accurately reflects the current state in the
-      // viewer itself, rather than the default state provided by the API.
-      pdfViewer.optionalContentConfigPromise.then(optionalContentConfig => {
-        this.pdfLayerViewer.render({ optionalContentConfig, pdfDocument });
       });
       if ("requestIdleCallback" in window) {
         const callback = window.requestIdleCallback(
@@ -2552,9 +2537,6 @@ function webViewerPageMode({ mode }) {
     case "bookmarks":
     case "outline": // non-standard
       view = SidebarView.OUTLINE;
-      break;
-    case "layers": // non-standard
-      view = SidebarView.LAYERS;
       break;
     case "none":
       view = SidebarView.NONE;
