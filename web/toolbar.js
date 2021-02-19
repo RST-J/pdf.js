@@ -43,7 +43,6 @@ const SCALE_SELECT_WIDTH = 162; // px
  * @property {HTMLButtonElement} next - Button to go to the next page.
  * @property {HTMLButtonElement} zoomIn - Button to zoom in the pages.
  * @property {HTMLButtonElement} zoomOut - Button to zoom out the pages.
- * @property {HTMLButtonElement} viewFind - Button to open find bar.
  * @property {HTMLButtonElement} openFile - Button to open a new document.
  * @property {HTMLButtonElement} presentationModeButton - Button to switch to
  *   presentation mode.
@@ -74,7 +73,6 @@ class Toolbar {
         eventName: "presentationmode",
       },
       { element: options.download, eventName: "download" },
-      { element: options.viewBookmark, eventName: null },
     ];
     this.items = {
       numPages: options.numPages,

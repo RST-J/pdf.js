@@ -25,7 +25,6 @@ import { EventBus, NullL10n, ProgressBar } from "./ui_utils.js";
 import { PDFLinkService, SimpleLinkService } from "./pdf_link_service.js";
 import { DownloadManager } from "./download_manager.js";
 import { GenericL10n } from "./genericl10n.js";
-import { PDFFindController } from "./pdf_find_controller.js";
 import { PDFHistory } from "./pdf_history.js";
 import { PDFPageView } from "./pdf_page_view.js";
 import { PDFSinglePageViewer } from "./pdf_single_page_viewer.js";
@@ -44,7 +43,6 @@ export {
   EventBus,
   GenericL10n,
   NullL10n,
-  PDFFindController,
   PDFHistory,
   PDFLinkService,
   PDFPageView,

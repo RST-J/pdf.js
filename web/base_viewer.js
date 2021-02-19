@@ -53,8 +53,6 @@ const DEFAULT_CACHE_SIZE = 10;
  * @property {IPDFLinkService} linkService - The navigation/linking service.
  * @property {DownloadManager} [downloadManager] - The download manager
  *   component.
- * @property {PDFFindController} [findController] - The find controller
- *   component.
  * @property {PDFRenderingQueue} [renderingQueue] - The rendering queue object.
  * @property {boolean} [removePageBorders] - Removes the border shadow around
  *   the pages. The default value is `false`.
@@ -179,7 +177,6 @@ class BaseViewer {
     this.eventBus = options.eventBus;
     this.linkService = options.linkService || new SimpleLinkService();
     this.downloadManager = options.downloadManager || null;
-    this.findController = options.findController || null;
     this.removePageBorders = options.removePageBorders || false;
     this.textLayerMode = Number.isInteger(options.textLayerMode)
       ? options.textLayerMode
@@ -464,10 +461,6 @@ class BaseViewer {
 
       this._cancelRendering();
       this._resetView();
-
-      if (this.findController) {
-        this.findController.setDocument(null);
-      }
     }
 
     this.pdfDocument = pdfDocument;
@@ -559,10 +552,6 @@ class BaseViewer {
         // starts to create the correct size canvas. Wait until one page is
         // rendered so we don't tie up too many resources early on.
         this._onePageRenderedOrForceFetch().then(() => {
-          if (this.findController) {
-            this.findController.setDocument(pdfDocument); // Enable searching.
-          }
-
           // In addition to 'disableAutoFetch' being set, also attempt to reduce
           // resource usage when loading *very* long/large documents.
           if (pdfDocument.loadingParams.disableAutoFetch || pagesCount > 7500) {
@@ -1256,7 +1245,6 @@ class BaseViewer {
       eventBus,
       pageIndex,
       viewport,
-      findController: this.isInPresentationMode ? null : this.findController,
       enhanceTextSelection: this.isInPresentationMode
         ? false
         : enhanceTextSelection,

@@ -61,8 +61,6 @@ import { OverlayManager } from "./overlay_manager.js";
 import { PasswordPrompt } from "./password_prompt.js";
 import { PDFAttachmentViewer } from "./pdf_attachment_viewer.js";
 import { PDFDocumentProperties } from "./pdf_document_properties.js";
-import { PDFFindBar } from "./pdf_find_bar.js";
-import { PDFFindController } from "./pdf_find_controller.js";
 import { PDFHistory } from "./pdf_history.js";
 import { PDFLayerViewer } from "./pdf_layer_viewer.js";
 import { PDFLinkService } from "./pdf_link_service.js";
@@ -472,12 +470,6 @@ const PDFViewerApplication = {
     const downloadManager = this.externalServices.createDownloadManager();
     this.downloadManager = downloadManager;
 
-    const findController = new PDFFindController({
-      linkService: pdfLinkService,
-      eventBus,
-    });
-    this.findController = findController;
-
     const container = appConfig.mainContainer;
     const viewer = appConfig.viewerContainer;
     this.pdfViewer = new PDFViewer({
@@ -487,7 +479,6 @@ const PDFViewerApplication = {
       renderingQueue: pdfRenderingQueue,
       linkService: pdfLinkService,
       downloadManager,
-      findController,
       renderer: AppOptions.get("renderer"),
       enableWebGL: AppOptions.get("enableWebGL"),
       l10n: this.l10n,
@@ -517,10 +508,6 @@ const PDFViewerApplication = {
       eventBus,
     });
     pdfLinkService.setHistory(this.pdfHistory);
-
-    if (!this.supportsIntegratedFind) {
-      this.findBar = new PDFFindBar(appConfig.findBar, eventBus, this.l10n);
-    }
 
     this.pdfDocumentProperties = new PDFDocumentProperties(
       appConfig.documentProperties,
@@ -844,9 +831,6 @@ const PDFViewerApplication = {
 
     if (this.pdfHistory) {
       this.pdfHistory.reset();
-    }
-    if (this.findBar) {
-      this.findBar.reset();
     }
     this.toolbar.reset();
 
@@ -2156,10 +2140,6 @@ const PDFViewerApplication = {
     eventBus._on("switchspreadmode", webViewerSwitchSpreadMode);
     eventBus._on("spreadmodechanged", webViewerSpreadModeChanged);
     eventBus._on("documentproperties", webViewerDocumentProperties);
-    eventBus._on("find", webViewerFind);
-    eventBus._on("findfromurlhash", webViewerFindFromUrlHash);
-    eventBus._on("updatefindmatchescount", webViewerUpdateFindMatchesCount);
-    eventBus._on("updatefindcontrolstate", webViewerUpdateFindControlState);
 
     if (AppOptions.get("pdfBug")) {
       _boundEvents.reportPageStatsPDFBug = reportPageStatsPDFBug;
@@ -2253,10 +2233,6 @@ const PDFViewerApplication = {
     eventBus._off("switchspreadmode", webViewerSwitchSpreadMode);
     eventBus._off("spreadmodechanged", webViewerSpreadModeChanged);
     eventBus._off("documentproperties", webViewerDocumentProperties);
-    eventBus._off("find", webViewerFind);
-    eventBus._off("findfromurlhash", webViewerFindFromUrlHash);
-    eventBus._off("updatefindmatchescount", webViewerUpdateFindMatchesCount);
-    eventBus._off("updatefindcontrolstate", webViewerUpdateFindControlState);
 
     if (_boundEvents.reportPageStatsPDFBug) {
       eventBus._off("pagerendered", _boundEvents.reportPageStatsPDFBug);
@@ -2636,18 +2612,16 @@ function webViewerNamedAction(evt) {
       PDFViewerApplication.appConfig.toolbar.pageNumber.select();
       break;
 
-    case "Find":
-      if (!PDFViewerApplication.supportsIntegratedFind) {
-        PDFViewerApplication.findBar.toggle();
-      }
-      break;
-
     case "Print":
       PDFViewerApplication.triggerPrinting();
       break;
 
     case "SaveAs":
       webViewerSave();
+      break;
+
+    default:
+      console.log("Unknown action ${evt.action}");
       break;
   }
 }
@@ -2862,54 +2836,6 @@ function webViewerDocumentProperties() {
   PDFViewerApplication.pdfDocumentProperties.open();
 }
 
-function webViewerFind(evt) {
-  PDFViewerApplication.findController.executeCommand("find" + evt.type, {
-    query: evt.query,
-    phraseSearch: evt.phraseSearch,
-    caseSensitive: evt.caseSensitive,
-    entireWord: evt.entireWord,
-    highlightAll: evt.highlightAll,
-    findPrevious: evt.findPrevious,
-  });
-}
-
-function webViewerFindFromUrlHash(evt) {
-  PDFViewerApplication.findController.executeCommand("find", {
-    query: evt.query,
-    phraseSearch: evt.phraseSearch,
-    caseSensitive: false,
-    entireWord: false,
-    highlightAll: true,
-    findPrevious: false,
-  });
-}
-
-function webViewerUpdateFindMatchesCount({ matchesCount }) {
-  if (PDFViewerApplication.supportsIntegratedFind) {
-    PDFViewerApplication.externalServices.updateFindMatchesCount(matchesCount);
-  } else {
-    PDFViewerApplication.findBar.updateResultsCount(matchesCount);
-  }
-}
-
-function webViewerUpdateFindControlState({
-  state,
-  previous,
-  matchesCount,
-  rawQuery,
-}) {
-  if (PDFViewerApplication.supportsIntegratedFind) {
-    PDFViewerApplication.externalServices.updateFindControlState({
-      result: state,
-      findPrevious: previous,
-      matchesCount,
-      rawQuery,
-    });
-  } else {
-    PDFViewerApplication.findBar.updateUIState(state, previous, matchesCount);
-  }
-}
-
 function webViewerScaleChanging(evt) {
   PDFViewerApplication.toolbar.setPageScale(evt.presetValue, evt.scale);
 
@@ -3077,28 +3003,6 @@ function webViewerKeyDown(evt) {
   if (cmd === 1 || cmd === 8 || cmd === 5 || cmd === 12) {
     // either CTRL or META key with optional SHIFT.
     switch (evt.keyCode) {
-      case 70: // f
-        if (!PDFViewerApplication.supportsIntegratedFind && !evt.shiftKey) {
-          PDFViewerApplication.findBar.open();
-          handled = true;
-        }
-        break;
-      case 71: // g
-        if (!PDFViewerApplication.supportsIntegratedFind) {
-          const findState = PDFViewerApplication.findController.state;
-          if (findState) {
-            PDFViewerApplication.findController.executeCommand("findagain", {
-              query: findState.query,
-              phraseSearch: findState.phraseSearch,
-              caseSensitive: findState.caseSensitive,
-              entireWord: findState.entireWord,
-              highlightAll: findState.highlightAll,
-              findPrevious: cmd === 5 || cmd === 12,
-            });
-          }
-          handled = true;
-        }
-        break;
       case 61: // FF/Mac '='
       case 107: // FF '+' and '='
       case 187: // Chrome '+'
@@ -3236,15 +3140,6 @@ function webViewerKeyDown(evt) {
       case 75: // 'k'
       case 80: // 'p'
         turnPage = -1;
-        break;
-      case 27: // esc key
-        if (
-          !PDFViewerApplication.supportsIntegratedFind &&
-          PDFViewerApplication.findBar.opened
-        ) {
-          PDFViewerApplication.findBar.close();
-          handled = true;
-        }
         break;
       case 40: // down arrow
       case 34: // pg down
