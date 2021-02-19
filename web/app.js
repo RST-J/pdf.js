@@ -59,7 +59,6 @@ import { CursorTool, PDFCursorTools } from "./pdf_cursor_tools.js";
 import { PDFRenderingQueue, RenderingStates } from "./pdf_rendering_queue.js";
 import { OverlayManager } from "./overlay_manager.js";
 import { PDFAttachmentViewer } from "./pdf_attachment_viewer.js";
-import { PDFDocumentProperties } from "./pdf_document_properties.js";
 import { PDFHistory } from "./pdf_history.js";
 import { PDFLayerViewer } from "./pdf_layer_viewer.js";
 import { PDFLinkService } from "./pdf_link_service.js";
@@ -203,8 +202,6 @@ const PDFViewerApplication = {
   pdfRenderingQueue: null,
   /** @type {PDFPresentationMode} */
   pdfPresentationMode: null,
-  /** @type {PDFDocumentProperties} */
-  pdfDocumentProperties: null,
   /** @type {PDFLinkService} */
   pdfLinkService: null,
   /** @type {PDFHistory} */
@@ -508,13 +505,6 @@ const PDFViewerApplication = {
     });
     pdfLinkService.setHistory(this.pdfHistory);
 
-    this.pdfDocumentProperties = new PDFDocumentProperties(
-      appConfig.documentProperties,
-      this.overlayManager,
-      eventBus,
-      this.l10n
-    );
-
     this.pdfCursorTools = new PDFCursorTools({
       container,
       eventBus,
@@ -799,7 +789,6 @@ const PDFViewerApplication = {
       this.pdfThumbnailViewer.setDocument(null);
       this.pdfViewer.setDocument(null);
       this.pdfLinkService.setDocument(null);
-      this.pdfDocumentProperties.setDocument(null);
     }
     webViewerResetPermissions();
     this.store = null;
@@ -1240,7 +1229,6 @@ const PDFViewerApplication = {
       baseDocumentUrl = location.href.split("#")[0];
     }
     this.pdfLinkService.setDocument(pdfDocument, baseDocumentUrl);
-    this.pdfDocumentProperties.setDocument(pdfDocument, this.url);
 
     const pdfViewer = this.pdfViewer;
     pdfViewer.setDocument(pdfDocument);
@@ -2131,7 +2119,6 @@ const PDFViewerApplication = {
     eventBus._on("scrollmodechanged", webViewerScrollModeChanged);
     eventBus._on("switchspreadmode", webViewerSwitchSpreadMode);
     eventBus._on("spreadmodechanged", webViewerSpreadModeChanged);
-    eventBus._on("documentproperties", webViewerDocumentProperties);
 
     if (AppOptions.get("pdfBug")) {
       _boundEvents.reportPageStatsPDFBug = reportPageStatsPDFBug;
@@ -2224,7 +2211,6 @@ const PDFViewerApplication = {
     eventBus._off("scrollmodechanged", webViewerScrollModeChanged);
     eventBus._off("switchspreadmode", webViewerSwitchSpreadMode);
     eventBus._off("spreadmodechanged", webViewerSpreadModeChanged);
-    eventBus._off("documentproperties", webViewerDocumentProperties);
 
     if (_boundEvents.reportPageStatsPDFBug) {
       eventBus._off("pagerendered", _boundEvents.reportPageStatsPDFBug);
@@ -2823,9 +2809,6 @@ function webViewerSwitchScrollMode(evt) {
 }
 function webViewerSwitchSpreadMode(evt) {
   PDFViewerApplication.pdfViewer.spreadMode = evt.mode;
-}
-function webViewerDocumentProperties() {
-  PDFViewerApplication.pdfDocumentProperties.open();
 }
 
 function webViewerScaleChanging(evt) {

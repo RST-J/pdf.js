@@ -1212,30 +1212,6 @@ html[dir="rtl"] .treeItemToggler::before {
   color: rgba(255, 255, 255, 1);
 }
 
-#documentPropertiesOverlay > .dialog {
-  text-align: left;
-}
-#documentPropertiesOverlay .row > * {
-  min-width: 100px;
-}
-html[dir="ltr"] #documentPropertiesOverlay .row > * {
-  text-align: left;
-}
-html[dir="rtl"] #documentPropertiesOverlay .row > * {
-  text-align: right;
-}
-#documentPropertiesOverlay .row > span {
-  width: 125px;
-  word-wrap: break-word;
-}
-#documentPropertiesOverlay .row > p {
-  max-width: 225px;
-  word-wrap: break-word;
-}
-#documentPropertiesOverlay .buttonRow {
-  margin-top: 10px;
-}
-
 .clearBoth {
   clear: both;
 }
