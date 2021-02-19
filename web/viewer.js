@@ -14,7 +14,7 @@
  */
 
 import { AppOptions } from "./app_options.js";
-import { PDFViewerApplication } from "./app.js";
+import { PDFViewerApplication, webViewerInitialized, webViewerOpenFileViaQuery } from "./app.js";
 
 /* eslint-disable-next-line no-unused-vars */
 const pdfjsVersion =
@@ -83,33 +83,6 @@ function getViewerConfiguration() {
       presentationModeButton: document.getElementById("presentationMode"),
       download: document.getElementById("download"),
       viewBookmark: document.getElementById("viewBookmark"),
-    },
-    secondaryToolbar: {
-      toolbar: document.getElementById("secondaryToolbar"),
-      toggleButton: document.getElementById("secondaryToolbarToggle"),
-      toolbarButtonContainer: document.getElementById(
-        "secondaryToolbarButtonContainer"
-      ),
-      presentationModeButton: document.getElementById(
-        "secondaryPresentationMode"
-      ),
-      openFileButton: document.getElementById("secondaryOpenFile"),
-      printButton: document.getElementById("secondaryPrint"),
-      downloadButton: document.getElementById("secondaryDownload"),
-      viewBookmarkButton: document.getElementById("secondaryViewBookmark"),
-      firstPageButton: document.getElementById("firstPage"),
-      lastPageButton: document.getElementById("lastPage"),
-      pageRotateCwButton: document.getElementById("pageRotateCw"),
-      pageRotateCcwButton: document.getElementById("pageRotateCcw"),
-      cursorSelectToolButton: document.getElementById("cursorSelectTool"),
-      cursorHandToolButton: document.getElementById("cursorHandTool"),
-      scrollVerticalButton: document.getElementById("scrollVertical"),
-      scrollHorizontalButton: document.getElementById("scrollHorizontal"),
-      scrollWrappedButton: document.getElementById("scrollWrapped"),
-      spreadNoneButton: document.getElementById("spreadNone"),
-      spreadOddButton: document.getElementById("spreadOdd"),
-      spreadEvenButton: document.getElementById("spreadEven"),
-      documentPropertiesButton: document.getElementById("documentProperties"),
     },
     fullscreen: {
       contextFirstPage: document.getElementById("contextFirstPage"),
@@ -197,20 +170,18 @@ function getViewerConfiguration() {
   };
 }
 
-function webViewerLoad() {
-  const config = getViewerConfiguration();
-  if (typeof PDFJSDev === "undefined" || !PDFJSDev.test("PRODUCTION")) {
-    Promise.all([
-      import("pdfjs-web/genericcom.js"),
-      import("pdfjs-web/pdf_print_service.js"),
-    ]).then(function ([genericCom, pdfPrintService]) {
-      PDFViewerApplication.run(config);
-    });
-  } else {
-    if (typeof PDFJSDev !== "undefined" && PDFJSDev.test("CHROME")) {
-      AppOptions.set("defaultUrl", defaultUrl);
-    }
+if (typeof PDFJSDev === "undefined" || !PDFJSDev.test("PRODUCTION")) {
+  Promise.all([
+    import("pdfjs-web/genericcom.js"),
+    import("pdfjs-web/pdf_print_service.js"),
+  ]);
+} else {
+  if (typeof PDFJSDev !== "undefined" && PDFJSDev.test("CHROME")) {
+    AppOptions.set("defaultUrl", defaultUrl);
+  }
+}
 
+function webViewerLoad (config) {
     if (typeof PDFJSDev !== "undefined" && PDFJSDev.test("GENERIC")) {
       // Give custom implementations of the default viewer a simpler way to
       // set various `AppOptions`, by dispatching an event once all viewer
@@ -232,17 +203,26 @@ function webViewerLoad() {
       }
     }
 
-    PDFViewerApplication.run(config);
+    PDFViewerApplication.initialize(config)
+      .then(webViewerInitialized)
+      .then(webViewerOpenFileViaQuery);
+}
+
+function loadWithDOM (config) {
+  if (
+    document.readyState === "interactive" ||
+    document.readyState === "complete"
+  ) {
+    webViewerLoad();
+  } else {
+    document.addEventListener("DOMContentLoaded", webViewerLoad, true);
   }
 }
 
-if (
-  document.readyState === "interactive" ||
-  document.readyState === "complete"
-) {
-  webViewerLoad();
-} else {
-  document.addEventListener("DOMContentLoaded", webViewerLoad, true);
-}
-
-export { PDFViewerApplication, AppOptions as PDFViewerApplicationOptions };
+export {
+    PDFViewerApplication,
+    AppOptions as PDFViewerApplicationOptions,
+    loadWithDOM,
+    webViewerLoad,
+    getViewerConfiguration,
+};
