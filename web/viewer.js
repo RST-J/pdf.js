@@ -23,9 +23,6 @@ const pdfjsVersion =
 const pdfjsBuild =
   typeof PDFJSDev !== "undefined" ? PDFJSDev.eval("BUNDLE_BUILD") : void 0;
 
-window.PDFViewerApplication = PDFViewerApplication;
-window.PDFViewerApplicationOptions = AppOptions;
-
 if (typeof PDFJSDev !== "undefined" && PDFJSDev.test("CHROME")) {
   var defaultUrl; // eslint-disable-line no-var
 
@@ -81,7 +78,6 @@ function getViewerConfiguration() {
       print: document.getElementById("print"),
       presentationModeButton: document.getElementById("presentationMode"),
       download: document.getElementById("download"),
-      viewBookmark: document.getElementById("viewBookmark"),
     },
     fullscreen: {
       contextFirstPage: document.getElementById("contextFirstPage"),
@@ -128,48 +124,14 @@ if (typeof PDFJSDev === "undefined" || !PDFJSDev.test("PRODUCTION")) {
   }
 }
 
-function webViewerLoad (config) {
-    if (typeof PDFJSDev !== "undefined" && PDFJSDev.test("GENERIC")) {
-      // Give custom implementations of the default viewer a simpler way to
-      // set various `AppOptions`, by dispatching an event once all viewer
-      // files are loaded but *before* the viewer initialization has run.
-      const event = document.createEvent("CustomEvent");
-      event.initCustomEvent("webviewerloaded", true, true, {
-        source: window,
-      });
-      try {
-        // Attempt to dispatch the event at the embedding `document`,
-        // in order to support cases where the viewer is embedded in
-        // a *dynamically* created <iframe> element.
-        parent.document.dispatchEvent(event);
-      } catch (ex) {
-        // The viewer could be in e.g. a cross-origin <iframe> element,
-        // fallback to dispatching the event at the current `document`.
-        console.error(`webviewerloaded: ${ex}`);
-        document.dispatchEvent(event);
-      }
-    }
-
-    PDFViewerApplication.initialize(config)
-      .then(webViewerInitialized)
-      .then(webViewerOpenFileViaQuery);
-}
-
-function loadWithDOM (config) {
-  if (
-    document.readyState === "interactive" ||
-    document.readyState === "complete"
-  ) {
-    webViewerLoad();
-  } else {
-    document.addEventListener("DOMContentLoaded", webViewerLoad, true);
-  }
-}
+window.PDFViewerApplication = PDFViewerApplication;
+window.PDFViewerApplicationOptions = AppOptions;
+window.getViewerConfiguration = getViewerConfiguration;
+window.webViewerInitialized = webViewerInitialized;
 
 export {
     PDFViewerApplication,
     AppOptions as PDFViewerApplicationOptions,
-    loadWithDOM,
-    webViewerLoad,
     getViewerConfiguration,
+    webViewerInitialized
 };

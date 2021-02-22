@@ -2585,10 +2585,6 @@ function webViewerUpdateViewarea(evt) {
         /* unable to write to storage */
       });
   }
-  const href = PDFViewerApplication.pdfLinkService.getAnchorUrl(
-    location.pdfOpenParams
-  );
-  PDFViewerApplication.appConfig.toolbar.viewBookmark.href = href;
 
   // Show/hide the loading indicator in the page number input element.
   const currentPage = PDFViewerApplication.pdfViewer.getPageView(
@@ -2674,7 +2670,6 @@ if (typeof PDFJSDev === "undefined" || PDFJSDev.test("GENERIC")) {
 
     // URL does not reflect proper document location - hiding some icons.
     const appConfig = PDFViewerApplication.appConfig;
-    appConfig.toolbar.viewBookmark.setAttribute("hidden", "true");
     appConfig.toolbar.download.setAttribute("hidden", "true");
   };
 
