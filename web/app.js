@@ -189,6 +189,7 @@ const PDFViewerApplication = {
   fellback: false,
   appConfig: null,
   pdfDocument: null,
+  pdfTitle: null,
   pdfLoadingTask: null,
   printService: null,
   /** @type {PDFViewer} */
@@ -697,7 +698,10 @@ const PDFViewerApplication = {
   get _docFilename() {
     // Use `this.url` instead of `this.baseUrl` to perform filename detection
     // based on the reference fragment as ultimate fallback if needed.
-    return this._contentDispositionFilename || getPDFFileNameFromURL(this.url);
+    return (this._contentDispositionFilename ||
+            this.pdfTitle ||
+            getPDFFileNameFromURL(this.url)
+           );
   },
 
   /**
@@ -758,7 +762,6 @@ const PDFViewerApplication = {
 
     if (this.pdfDocument) {
       this.pdfDocument = null;
-
       this.pdfThumbnailViewer.setDocument(null);
       this.pdfViewer.setDocument(null);
       this.pdfLinkService.setDocument(null);
@@ -771,6 +774,7 @@ const PDFViewerApplication = {
     this.baseUrl = "";
     this.documentInfo = null;
     this.metadata = null;
+    this.pdfTitle = null;
     this._contentDispositionFilename = null;
     this._contentLength = null;
     this.triggerDelayedFallback = null;
@@ -1680,10 +1684,9 @@ const PDFViewerApplication = {
         `${this.pdfViewer.enableWebGL ? " [WebGL]" : ""})`
     );
 
-    let pdfTitle;
     const infoTitle = info && info.Title;
     if (infoTitle) {
-      pdfTitle = infoTitle;
+      this.pdfTitle = infoTitle;
     }
     const metadataTitle = metadata && metadata.get("dc:title");
     if (metadataTitle) {
@@ -1697,12 +1700,12 @@ const PDFViewerApplication = {
         metadataTitle !== "Untitled" &&
         !/[\uFFF0-\uFFFF]/g.test(metadataTitle)
       ) {
-        pdfTitle = metadataTitle;
+        this.pdfTitle = metadataTitle;
       }
     }
-    if (pdfTitle) {
+    if (this.pdfTitle) {
       this.setTitle(
-        `${pdfTitle} - ${contentDispositionFilename || document.title}`
+        `${this.pdfTitle} - ${contentDispositionFilename || document.title}`
       );
     } else if (contentDispositionFilename) {
       this.setTitle(contentDispositionFilename);
