@@ -19,7 +19,6 @@
   --sidebar-width: 200px;
   --sidebar-transition-duration: 200ms;
   --sidebar-transition-timing-function: ease;
-  --loadingBar-end-offset: 0;
 
   --toolbar-icon-opacity: 0.7;
   --doorhanger-icon-opacity: 0.9;
@@ -309,39 +308,6 @@ select {
   height: 32px;
 }
 
-#loadingBar {
-  position: absolute;
-  height: 4px;
-  background-color: var(--body-bg-color);
-  border-bottom: 1px solid var(--toolbar-border-color);
-
-  transition-duration: var(--sidebar-transition-duration);
-  transition-timing-function: var(--sidebar-transition-timing-function);
-  transition-property: left;
-  left: 0;
-  right: var(--loadingBar-end-offset);
-}
-
-#outerContainer.sidebarOpen #loadingBar {
-  left: var(--sidebar-width);
-}
-
-#outerContainer.sidebarResizing #loadingBar {
-  /* Improve responsiveness and avoid visual glitches when the sidebar is resized. */
-  transition-duration: 0s;
-}
-
-#loadingBar .progress {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0%;
-  height: 100%;
-  background-color: var(--progressBar-color);
-  overflow: hidden;
-  transition: width 200ms;
-}
-
 @keyframes progressIndeterminate {
   0% {
     left: -142px;
@@ -349,29 +315,6 @@ select {
   100% {
     left: 0;
   }
-}
-
-#loadingBar .progress.indeterminate {
-  background-color: var(--progressBar-indeterminate-bg-color);
-  transition: none;
-}
-
-#loadingBar .progress.indeterminate .glimmer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: calc(100% + 150px);
-  background: repeating-linear-gradient(
-    135deg,
-    var(--progressBar-indeterminate-blend-color) 0,
-    var(--progressBar-indeterminate-bg-color) 5px,
-    var(--progressBar-indeterminate-bg-color) 45px,
-    var(--progressBar-color) 55px,
-    var(--progressBar-color) 95px,
-    var(--progressBar-indeterminate-blend-color) 100px
-  );
-  animation: progressIndeterminate 1s linear infinite;
 }
 
 .doorHanger,

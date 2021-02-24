@@ -29,7 +29,6 @@ import {
   noContextMenuHandler,
   normalizeWheelEventDirection,
   parseQueryString,
-  ProgressBar,
   RendererType,
   ScrollMode,
   SidebarView,
@@ -620,11 +619,6 @@ const PDFViewerApplication = {
     return this.externalServices.supportsDocumentFonts;
   },
 
-  get loadingBar() {
-    const bar = new ProgressBar("#loadingBar");
-    return shadow(this, "loadingBar", bar);
-  },
-
   get supportedMouseWheelZoomModifierKeys() {
     return this.externalServices.supportedMouseWheelZoomModifierKeys;
   },
@@ -666,7 +660,7 @@ const PDFViewerApplication = {
           });
       },
       onProgress(loaded, total) {
-        PDFViewerApplication.progress(loaded / total);
+        console.log(`Progress: ${loaded / total}`);
       },
     });
   },
@@ -860,7 +854,7 @@ const PDFViewerApplication = {
     };
 
     loadingTask.onProgress = ({ loaded, total }) => {
-      this.progress(loaded / total);
+      console.log(`Progress: ${loaded / total}`);
     };
 
     // Listen for unsupported features to trigger the fallback UI.
@@ -1129,51 +1123,12 @@ const PDFViewerApplication = {
     }
   },
 
-  progress(level) {
-    if (this.downloadComplete) {
-      // Don't accidentally show the loading bar again when the entire file has
-      // already been fetched (only an issue when disableAutoFetch is enabled).
-      return;
-    }
-    const percent = Math.round(level * 100);
-    // When we transition from full request to range requests, it's possible
-    // that we discard some of the loaded data. This can cause the loading
-    // bar to move backwards. So prevent this by only updating the bar if it
-    // increases.
-    if (percent > this.loadingBar.percent || isNaN(percent)) {
-      this.loadingBar.percent = percent;
-
-      // When disableAutoFetch is enabled, it's not uncommon for the entire file
-      // to never be fetched (depends on e.g. the file structure). In this case
-      // the loading bar will not be completely filled, nor will it be hidden.
-      // To prevent displaying a partially filled loading bar permanently, we
-      // hide it when no data has been loaded during a certain amount of time.
-      const disableAutoFetch = this.pdfDocument
-        ? this.pdfDocument.loadingParams.disableAutoFetch
-        : AppOptions.get("disableAutoFetch");
-
-      if (disableAutoFetch && percent) {
-        if (this.disableAutoFetchLoadingBarTimeout) {
-          clearTimeout(this.disableAutoFetchLoadingBarTimeout);
-          this.disableAutoFetchLoadingBarTimeout = null;
-        }
-        this.loadingBar.show();
-
-        this.disableAutoFetchLoadingBarTimeout = setTimeout(() => {
-          this.loadingBar.hide();
-          this.disableAutoFetchLoadingBarTimeout = null;
-        }, DISABLE_AUTO_FETCH_LOADING_BAR_TIMEOUT);
-      }
-    }
-  },
-
   load(pdfDocument) {
     this.pdfDocument = pdfDocument;
 
     pdfDocument.getDownloadInfo().then(({ length }) => {
       this._contentLength = length; // Ensure that the correct length is used.
       this.downloadComplete = true;
-      this.loadingBar.hide();
 
       firstPagePromise.then(() => {
         this.eventBus.dispatch("documentloaded", { source: this });
@@ -1230,7 +1185,6 @@ const PDFViewerApplication = {
       });
 
     firstPagePromise.then(pdfPage => {
-      this.loadingBar.setWidth(this.appConfig.viewerContainer);
       this._initializeAnnotationStorageCallbacks(pdfDocument);
 
       Promise.all([
