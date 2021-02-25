@@ -186,7 +186,7 @@ class PDFSidebar {
     }
     this.isOpen = true;
 
-    this.outerContainer.classList.add("sidebarMoving", "sidebarOpen");
+    this.outerContainer.classList.add("sidebarOpen");
 
     if (this.active === SidebarView.THUMBS) {
       this._updateThumbnailViewer();
@@ -201,7 +201,6 @@ class PDFSidebar {
     }
     this.isOpen = false;
 
-    this.outerContainer.classList.add("sidebarMoving");
     this.outerContainer.classList.remove("sidebarOpen");
 
     this._forceRendering();
@@ -261,12 +260,6 @@ class PDFSidebar {
    * @private
    */
   _addEventListeners() {
-    this.viewerContainer.addEventListener("transitionend", evt => {
-      if (evt.target === this.viewerContainer) {
-        this.outerContainer.classList.remove("sidebarMoving");
-      }
-    });
-
     // Buttons for switching views.
     this.thumbnailButton.addEventListener("click", () => {
       this.switchView(SidebarView.THUMBS);
