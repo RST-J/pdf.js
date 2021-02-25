@@ -33,8 +33,6 @@ const UI_NOTIFICATION_CLASS = "pdfSidebarNotification";
  *   (encasing both the viewer and sidebar elements).
  * @property {HTMLDivElement} viewerContainer - The viewer container
  *   (in which the viewer element is placed).
- * @property {HTMLButtonElement} toggleButton - The button used for
- *   opening/closing the sidebar.
  * @property {HTMLButtonElement} thumbnailButton - The button used to show
  *   the thumbnail view.
  * @property {HTMLDivElement} thumbnailView - The container in which
@@ -67,7 +65,6 @@ class PDFSidebar {
 
     this.outerContainer = elements.outerContainer;
     this.viewerContainer = elements.viewerContainer;
-    this.toggleButton = elements.toggleButton;
 
     this.thumbnailButton = elements.thumbnailButton;
 
@@ -82,7 +79,6 @@ class PDFSidebar {
   reset() {
     this.isInitialViewSet = false;
 
-    this._hideUINotification(/* reset = */ true);
     this.switchView(SidebarView.THUMBS);
   }
 
@@ -189,7 +185,6 @@ class PDFSidebar {
       return;
     }
     this.isOpen = true;
-    this.toggleButton.classList.add("toggled");
 
     this.outerContainer.classList.add("sidebarMoving", "sidebarOpen");
 
@@ -198,8 +193,6 @@ class PDFSidebar {
     }
     this._forceRendering();
     this._dispatchEvent();
-
-    this._hideUINotification();
   }
 
   close() {
@@ -207,7 +200,6 @@ class PDFSidebar {
       return;
     }
     this.isOpen = false;
-    this.toggleButton.classList.remove("toggled");
 
     this.outerContainer.classList.add("sidebarMoving");
     this.outerContainer.classList.remove("sidebarOpen");
@@ -268,46 +260,6 @@ class PDFSidebar {
   /**
    * @private
    */
-  _showUINotification() {
-    this.l10n
-      .get(
-        "toggle_sidebar_notification2.title",
-        null,
-        "Toggle Sidebar (document contains outline/attachments/layers)"
-      )
-      .then(msg => {
-        this.toggleButton.title = msg;
-      });
-
-    if (!this.isOpen) {
-      // Only show the notification on the `toggleButton` if the sidebar is
-      // currently closed, to avoid unnecessarily bothering the user.
-      this.toggleButton.classList.add(UI_NOTIFICATION_CLASS);
-    }
-  }
-
-  /**
-   * @private
-   */
-  _hideUINotification(reset = false) {
-    if (this.isOpen || reset) {
-      // Only hide the notification on the `toggleButton` if the sidebar is
-      // currently open, or when the current PDF document is being closed.
-      this.toggleButton.classList.remove(UI_NOTIFICATION_CLASS);
-    }
-
-    if (reset) {
-      this.l10n
-        .get("toggle_sidebar.title", null, "Toggle Sidebar")
-        .then(msg => {
-          this.toggleButton.title = msg;
-        });
-    }
-  }
-
-  /**
-   * @private
-   */
   _addEventListeners() {
     this.viewerContainer.addEventListener("transitionend", evt => {
       if (evt.target === this.viewerContainer) {
@@ -315,27 +267,10 @@ class PDFSidebar {
       }
     });
 
-    this.toggleButton.addEventListener("click", () => {
-      this.toggle();
-    });
-
     // Buttons for switching views.
     this.thumbnailButton.addEventListener("click", () => {
       this.switchView(SidebarView.THUMBS);
     });
-
-    // Disable/enable views.
-    const onTreeLoaded = (count, button, view) => {
-      button.disabled = !count;
-
-      if (count) {
-        this._showUINotification();
-      } else if (this.active === view) {
-        // If the `view` was opened by the user during document load,
-        // switch away from it if it turns out to be empty.
-        this.switchView(SidebarView.THUMBS);
-      }
-    };
 
     // Update the thumbnailViewer, if visible, when exiting presentation mode.
     this.eventBus._on("presentationmodechanged", evt => {
@@ -346,6 +281,7 @@ class PDFSidebar {
         this._updateThumbnailViewer();
       }
     });
+    this.eventBus._on("togglesidebar", evt => {this.toggle();});
   }
 }
 
