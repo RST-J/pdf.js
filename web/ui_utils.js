@@ -815,6 +815,10 @@ class EventBus {
     }
   }
 
+  reset() {
+    this._listeners = Object.create(null);
+  }
+
   /**
    * @param {string} eventName
    * @param {function} listener

@@ -740,8 +740,12 @@ const PDFViewerApplication = {
    *                      destruction is completed.
    */
   async close() {
-    const errorWrapper = this.appConfig.errorWrapper.container;
-    errorWrapper.setAttribute("hidden", "true");
+    if (this?.appConfig?.errorWrapper?.container) {
+        const errorWrapper = this.appConfig.errorWrapper.container;
+        errorWrapper.setAttribute("hidden", "true");
+    }
+
+    this.reset();
 
     if (!this.pdfLoadingTask) {
       return undefined;
@@ -750,6 +754,18 @@ const PDFViewerApplication = {
 
     promises.push(this.pdfLoadingTask.destroy());
     this.pdfLoadingTask = null;
+    promises.push(this._destroyScriptingInstance());
+
+    if (typeof PDFBug !== "undefined") {
+      PDFBug.cleanup();
+    }
+    await Promise.all(promises);
+
+    return undefined;
+  },
+
+  reset() {
+    this._initializedCapability = createPromiseCapability();
 
     if (this.pdfDocument) {
       this.pdfDocument = null;
@@ -772,21 +788,25 @@ const PDFViewerApplication = {
     this._saveInProgress = false;
 
     this._cancelIdleCallbacks();
-    promises.push(this._destroyScriptingInstance());
 
-    this.pdfSidebar.reset();
+    if (this.eventBus) {
+        this.eventBus.reset();
+        this.eventBus = null;
+    }
+
+    if (this.pdfSidebar) {
+        this.pdfSidebar.reset();
+        this.pdfSidebar = null;
+    }
 
     if (this.pdfHistory) {
       this.pdfHistory.reset();
     }
-    this.toolbar.reset();
 
-    if (typeof PDFBug !== "undefined") {
-      PDFBug.cleanup();
+    if (this.toolbar) {
+        this.toolbar.reset();
+        this.toolbar = null;
     }
-    await Promise.all(promises);
-
-    return undefined;
   },
 
   /**

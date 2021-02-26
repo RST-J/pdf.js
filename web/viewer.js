@@ -58,40 +58,58 @@ if (typeof PDFJSDev !== "undefined" && PDFJSDev.test("CHROME || GENERIC")) {
 }
 
 function getViewerConfiguration() {
+  const mainContainer = document.getElementById("viewerContainer");
+  const viewerContainer = document.getElementById("viewer");
+  const contextFirstPage = document.getElementById("contextFirstPage");
+  const contextLastPage = document.getElementById("contextLastPage");
+  const contextPageRotateCw = document.getElementById("contextPageRotateCw");
+  const contextPageRotateCcw = document.getElementById("contextPageRotateCcw");
+  const outerContainer = document.getElementById("outerContainer");
+  const toggleButton = document.getElementById("sidebarToggle");
+  const thumbnailButton = document.getElementById("viewThumbnail");
+  const thumbnailView = document.getElementById("thumbnailView");
+  const resizer = document.getElementById("sidebarResizer");
+  const container = document.getElementById("errorWrapper");
+  const errorMessage = document.getElementById("errorMessage");
+  const closeButton = document.getElementById("errorClose");
+  const errorMoreInfo = document.getElementById("errorMoreInfo");
+  const moreInfoButton = document.getElementById("errorShowMore");
+  const lessInfoButton = document.getElementById("errorShowLess");
+  const printContainer = document.getElementById("printContainer");
   return {
     appContainer: document.body,
-    mainContainer: document.getElementById("viewerContainer"),
-    viewerContainer: document.getElementById("viewer"),
+    mainContainer: mainContainer,
+    viewerContainer: viewerContainer,
     eventBus: null,
     fullscreen: {
-      contextFirstPage: document.getElementById("contextFirstPage"),
-      contextLastPage: document.getElementById("contextLastPage"),
-      contextPageRotateCw: document.getElementById("contextPageRotateCw"),
-      contextPageRotateCcw: document.getElementById("contextPageRotateCcw"),
+      contextFirstPage: contextFirstPage,
+      contextLastPage: contextLastPage,
+      contextPageRotateCw: contextPageRotateCw,
+      contextPageRotateCcw: contextPageRotateCcw,
     },
     sidebar: {
       // Divs (and sidebar button)
-      outerContainer: document.getElementById("outerContainer"),
-      viewerContainer: document.getElementById("viewerContainer"),
-      toggleButton: document.getElementById("sidebarToggle"),
+      outerContainer: outerContainer,
+      viewerContainer: viewerContainer,
+      toggleButton: toggleButton,
       // Buttons
-      thumbnailButton: document.getElementById("viewThumbnail"),
+      thumbnailButton: thumbnailButton,
       // Views
-      thumbnailView: document.getElementById("thumbnailView"),
+      thumbnailView: thumbnailView,
     },
     sidebarResizer: {
-      outerContainer: document.getElementById("outerContainer"),
-      resizer: document.getElementById("sidebarResizer"),
+      outerContainer: outerContainer,
+      resizer: resizer,
     },
     errorWrapper: {
-      container: document.getElementById("errorWrapper"),
-      errorMessage: document.getElementById("errorMessage"),
-      closeButton: document.getElementById("errorClose"),
-      errorMoreInfo: document.getElementById("errorMoreInfo"),
-      moreInfoButton: document.getElementById("errorShowMore"),
-      lessInfoButton: document.getElementById("errorShowLess"),
+      container: container,
+      errorMessage: errorMessage,
+      closeButton: closeButton,
+      errorMoreInfo: errorMoreInfo,
+      moreInfoButton: moreInfoButton,
+      lessInfoButton: lessInfoButton,
     },
-    printContainer: document.getElementById("printContainer"),
+    printContainer: printContainer,
     openFileInputName: "fileInput",
     debuggerScriptPath: "./debugger.js",
   };
