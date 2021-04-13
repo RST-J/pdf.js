@@ -463,7 +463,10 @@ function createWebBundle(defines) {
   var viewerFileConfig = createWebpackConfig(defines, {
     filename: viewerOutputName,
   });
-  return gulp.src("./web/viewer.js").pipe(webpack2Stream(viewerFileConfig));
+  return gulp
+    .src("./web/viewer.js")
+    .pipe(webpack2Stream(viewerFileConfig))
+    .pipe(replaceWebpackRequire());
 }
 
 function createComponentsBundle(defines) {
