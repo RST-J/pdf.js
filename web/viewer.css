@@ -20,7 +20,7 @@
   --sidebar-transition-duration: 200ms;
   --sidebar-transition-timing-function: ease;
 
-  --toolbar-icon-opacity: 0.7;
+  --toolbar-icon-opacity: 1; /* HS01 modification: Original value 0.7 */
   --doorhanger-icon-opacity: 0.9;
 
   --main-color: rgba(12, 12, 13, 1);
@@ -31,16 +31,19 @@
   --progressBar-indeterminate-blend-color: rgba(116, 177, 239, 1);
   --scrollbar-color: auto;
   --scrollbar-bg-color: auto;
-  --toolbar-icon-bg-color: rgba(0, 0, 0, 1);
+  --toolbar-icon-bg-color: var(--mdc-theme-on-primary, white); /* HSO1 modification: Original value rgba(0, 0, 0, 1) */
 
   --sidebar-bg-color: rgba(245, 246, 247, 1);
-  --toolbar-bg-color: rgba(249, 249, 250, 1);
+  --toolbar-bg-color: var(--mdc-theme-primary, rgba(249, 249, 250, 1)); /* HS01 modification: Use old default as fallback */
   --toolbar-border-color: rgba(204, 204, 204, 1);
-  --button-hover-color: rgba(221, 222, 223, 1);
+  /* HS01 modification: Add the two next variables for toolbar height */
+  --toolbar-height: 64px;
+  --toolbar-height-xs: 56px;
+  --button-hover-color: rgba(221, 222, 223, 1); /* TODO: Decide how to derive a color from the MDC theme colors here, Lugos has hsl(198, 100%, 55%) */
   --toggled-btn-bg-color: rgba(0, 0, 0, 0.3);
   --toggled-hover-active-btn-color: rgba(0, 0, 0, 0.4);
-  --dropdown-btn-bg-color: rgba(215, 215, 219, 1);
-  --separator-color: rgba(0, 0, 0, 0.3);
+  --dropdown-btn-bg-color: var(--mdc-theme-on-primary, white); /* HSO1 modification: Original value rgba(215, 215, 219, 1) */
+  --separator-color: var(--mdc-theme-on-primary, white); /* HSO1 modification: Original value rgba(0, 0, 0, 0.3) */
   --field-color: rgba(6, 6, 6, 1);
   --field-bg-color: rgba(255, 255, 255, 1);
   --field-border-color: rgba(187, 187, 188, 1);
@@ -117,31 +120,76 @@
   }
 }
 
-* {
-  padding: 0;
-  margin: 0;
-}
-
-html {
-  height: 100%;
-  width: 100%;
-  /* Font size is needed to make the activity bar the correct size. */
-  font-size: 10px;
-}
-
-body {
-  height: 100%;
-  width: 100%;
+/* HS01 modification: Add style */
+#outerContainer {
   background-color: var(--body-bg-color);
 }
 
-body,
-input,
-button,
-select {
+/* HS01 modification: Add style */
+@media (prefers-color-scheme: dark) {
+
+  #outerContainer {
+    background-color: var(--body-bg-color);
+  }
+}
+
+/* HS01 modification: Add style */
+#outerContainer {
   font: message-box;
   outline: none;
   scrollbar-color: var(--scrollbar-color) var(--scrollbar-bg-color);
+}
+
+/* HS01 modification: Add style */
+@media (prefers-color-scheme: dark) {
+
+  #outerContainer {
+    scrollbar-color: var(--scrollbar-color) var(--scrollbar-bg-color);
+  }
+}
+
+/* HS01 modification: Add style */
+#outerContainer input {
+  font: message-box;
+  outline: none;
+  scrollbar-color: var(--scrollbar-color) var(--scrollbar-bg-color);
+}
+
+/* HS01 modification: Add style */
+@media (prefers-color-scheme: dark) {
+
+  #outerContainer input {
+      scrollbar-color: var(--scrollbar-color) var(--scrollbar-bg-color);
+  }
+}
+
+/* HS01 modification: Add style */
+#outerContainer button {
+  outline: none;
+  scrollbar-color: var(--scrollbar-color) var(--scrollbar-bg-color);
+}
+
+/* HS01 modification: Add style */
+@media (prefers-color-scheme: dark) {
+
+  #outerContainer button {
+      scrollbar-color: var(--scrollbar-color) var(--scrollbar-bg-color);
+  }
+}
+
+/* HS01 modification: Add style */
+#outerContainer select {
+  font: message-box;
+  outline: none;
+  scrollbar-color: var(--scrollbar-color) var(--scrollbar-bg-color);
+}
+
+/* HS01 modification: Add style */
+@media (prefers-color-scheme: dark) {
+
+  #outerContainer select {
+      scrollbar-color: var(--scrollbar-color) var(--scrollbar-bg-color);
+  }
 }
 
 .hidden {
@@ -186,14 +234,14 @@ select {
   position: relative;
 }
 
+/* HS01 modification: Remove 'border-top', Change 'top' from 32px */
 #sidebarContainer {
   position: absolute;
-  top: 32px;
+  top: 0;
   bottom: 0;
   width: var(--sidebar-width);
   visibility: hidden;
   z-index: 100;
-  border-top: 1px solid rgba(51, 51, 51, 1);
   transition-duration: var(--sidebar-transition-duration);
   transition-timing-function: var(--sidebar-transition-timing-function);
   transition-property: left;
@@ -207,7 +255,7 @@ select {
   user-select: none;
 }
 
-#outerContainer.sidebarMoving #sidebarContainer,
+/* HS01 modification: Remove selector '#outerContainer.sidebarMoving #sidebarContainer' */
 #outerContainer.sidebarOpen #sidebarContainer {
   visibility: visible;
   left: 0;
@@ -238,7 +286,7 @@ select {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   position: absolute;
-  top: 32px;
+  top: 0; /* HS01 modification: Original value 32px */
   right: 0;
   bottom: 0;
   left: 0;
@@ -257,14 +305,6 @@ select {
 #outerContainer.sidebarOpen #viewerContainer:not(.pdfPresentationMode) {
   transition-property: left;
   left: var(--sidebar-width);
-}
-
-.toolbar {
-  position: relative;
-  left: 0;
-  right: 0;
-  z-index: 9999;
-  cursor: default;
 }
 
 #toolbarContainer {
@@ -296,16 +336,15 @@ select {
   cursor: ew-resize;
   right: -6px;
 }
-
+/* HS01 modification: Remove 'box-shadow' */
 #toolbarContainer {
   position: relative;
-  height: 32px;
+  height: var(--toolbar-height);
   background-color: var(--toolbar-bg-color);
-  box-shadow: 0 1px 0 var(--toolbar-border-color);
 }
 
 #toolbarViewer {
-  height: 32px;
+  height: var(--toolbar-height);
 }
 
 @keyframes progressIndeterminate {
@@ -365,32 +404,69 @@ select {
   margin-right: -9px;
 }
 
+/* HS01 modification: Added 'height', 'display', 'align-items' */
 #toolbarViewerMiddle {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+  height: var(--toolbar-height);
+  display: inline-flex;
+  align-items: center;
 }
 
-#toolbarViewerLeft,
+/* HS01 modification: Add style */
+.layout-xs #toolbarViewerMiddle {
+  height: var(--toolbar-height-xs);
+}
+
+/* HS01 modification: Add style */
+#toolbarViewerLeft {
+  height: var(--toolbar-height);
+  display: inline-flex;
+  align-items: center;
+}
+
+/* HS01 modification: Add style */
+.layout-xs #toolbarViewerLeft {
+  height: var(--toolbar-height-xs);
+}
+
+/* HS01 modification: Add style */
+#toolbarViewerRight {
+  height: var(--toolbar-height);
+  float: right;
+  display: inline-flex;
+  align-items: center;
+  flex-direction: row-reverse;
+  margin-right: 12px;
+}
+
+/* HS01 modification: Add style */
+.layout-xs #toolbarViewerRight {
+  height: var(--toolbar-height-xs);
+}
+
+/* HS01 modification: Remove selectors related to #toolbarViewer */
 #toolbarSidebarLeft {
   float: left;
 }
-#toolbarViewerRight,
+/* HS01 modification: Remove selectors related to #toolbarViewer */
 #toolbarSidebarRight {
   float: right;
 }
-#toolbarViewerLeft > *,
-#toolbarViewerMiddle > *,
-#toolbarViewerRight > *,
+/* HS01 modification: Remove selectors related to #toolbarViewer */
 #toolbarSidebarLeft *,
 #toolbarSidebarRight * {
   position: relative;
   float: left;
 }
 
+/* HS01 modification: Add 'height', 'align-items', Change 'display' (original value inline-block) */
 .splitToolbarButton {
   margin: 2px 2px 0;
-  display: inline-block;
+  display: flex;
+  height: 28px;
+  align-items: center;
 }
 .splitToolbarButton > .toolbarButton {
   float: left;
@@ -400,8 +476,8 @@ select {
 .overlayButton {
   border: 0 none;
   background: none;
-  width: 28px;
-  height: 28px;
+  width: 24px; /* HS01 modification: Original value 28px; */
+  height: 24px; /* HS01 modification: Original value 28px; */
 }
 .overlayButton {
   background-color: var(--overlay-button-bg-color);
@@ -445,17 +521,42 @@ select {
 .splitToolbarButton > .toolbarButton:last-child {
   margin: 0;
 }
+/* HS01 modification: Remove 'padding', add 'height', replaced 'margin' by 'margin-left' and 'margin-right' */
 .splitToolbarButtonSeparator {
-  padding: 10px 0;
   width: 1px;
+  height: 24px;
   background-color: var(--separator-color);
   z-index: 99;
   display: inline-block;
-  margin: 4px 0;
+  margin-left: 2px;
+  margin-right: 2px;
   float: left;
 }
 
-.toolbarButton,
+/* HS01 modification: Remove .toolbarButton from selector list below and insert custom style with changed 'margin', 'padding' and 'color' */
+.toolbarButton {
+  min-width: 16px;
+  margin: 4px;
+  padding: 0;
+  border: none;
+  border-radius: 2px;
+  color: var(--mdc-theme-on-primary, white);
+  font-size: 12px;
+  line-height: 14px;
+  user-select: none;
+  cursor: default;
+  box-sizing: border-box;
+}
+
+/* HS01 modification: Add style (OPTIMIZE: should somehow be possible to be created by the build process) */
+@media (prefers-color-scheme: dark) {
+
+  .toolbarButton {
+    color: rgba(249, 249, 250, 1);
+    color: var(--main-color);
+  }
+}
+
 .dropdownToolbarButton,
 .overlayButton {
   min-width: 16px;
@@ -475,9 +576,10 @@ select {
   margin-left: 2px;
 }
 
-#toolbarViewerRight > .toolbarButton:last-child {
-  margin-right: 2px;
-}
+/* HS01 modification: disable next rule */
+/* #toolbarViewerRight > .toolbarButton:last-child { */
+/*   margin-right: 2px; */
+/* } */
 .toolbarButton:hover,
 .toolbarButton:focus {
   background-color: var(--button-hover-color);
@@ -500,17 +602,31 @@ select {
   background-color: var(--dropdown-btn-bg-color);
   margin-top: 2px !important;
 }
+/* HS01 modification: Added 'position', 'display', 'width', 'height', 'content', 'background-color', 'mask-size', changed 'top' from 6px */
 .dropdownToolbarButton::after {
-  top: 6px;
+  /* All matching images have a size of 16x16
+   * All relevant containers have a size of 28x28 */
+  position: absolute;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  top: 24px;
   pointer-events: none;
   right: 7px;
+
+  /* HS01 modification: This part has been copied from .toolbarButton::before further below */
+  content: "";
+  background-color: var(--toolbar-icon-bg-color);
+  -webkit-mask-size: cover;
+  mask-size: cover;
 
   -webkit-mask-image: var(--toolbarButton-menuArrow-icon);
   mask-image: var(--toolbarButton-menuArrow-icon);
 }
 
+/* HS01 modification: Changed 'width' from 162px */
 .dropdownToolbarButton > select {
-  width: 162px;
+  width: 100%;
   height: 28px;
   font-size: 12px;
   color: var(--main-color);
@@ -520,12 +636,14 @@ select {
   background-color: var(--dropdown-btn-bg-color);
   padding-left: 4px;
 }
+/* HS01 modification: Changed 'background-color' from var(--button-hover-color) */
 .dropdownToolbarButton > select:hover {
-  background-color: var(--button-hover-color);
+  background-color: lightgrey;
 }
 
+/* HS01 modification: Changed 'background-color' from var(--button-hover-color) */
 .dropdownToolbarButton > select:focus {
-  background-color: var(--button-hover-color);
+  background-color: lightgrey;
 }
 
 .dropdownToolbarButton > select > option {
@@ -546,7 +664,20 @@ select {
   height: 1px;
 }
 
-.toolbarButton::before,
+/* HS01 modification: Remove .toolbarButton::before from selector list below and remove 'position', change 'width' and 'height' from 16px */
+.toolbarButton::before {
+  /* All matching images have a size of 16x16
+   * All relevant containers have a size of 28x28 */
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+
+  content: "";
+  background-color: var(--toolbar-icon-bg-color);
+  -webkit-mask-size: cover;
+  mask-size: cover;
+}
+
 .dropdownToolbarButton::after,
 .treeItemToggler::before {
   /* All matching images have a size of 16x16
@@ -562,10 +693,9 @@ select {
   mask-size: cover;
 }
 
+/* HS01 modification: Remove 'top', 'left' */
 .toolbarButton::before {
   opacity: var(--toolbar-icon-opacity);
-  top: 6px;
-  left: 6px;
 }
 
 .toolbarButton#sidebarToggle::before {
@@ -668,9 +798,9 @@ select {
   border-top: 1px solid var(--doorhanger-separator-color);
 }
 
+/* HS01 modification: Remove 'margin' */
 .toolbarField {
   padding: 4px 7px;
-  margin: 3px 0;
   border-radius: 2px;
   background-color: var(--field-bg-color);
   background-clip: padding-box;
@@ -691,11 +821,13 @@ select {
   margin: 10px 0 3px 7px;
 }
 
+/* HS01 modification: Added 'font', changed 'width' from 40px */
 .toolbarField.pageNumber {
   -moz-appearance: textfield; /* hides the spinner in moz */
   min-width: 16px;
   text-align: right;
-  width: 40px;
+  width: 30px;
+  font: 400 15px "liberation sans";
 }
 
 .toolbarField.pageNumber.visiblePageIsLoading {
@@ -714,13 +846,14 @@ select {
   border-color: #0a84ff;
 }
 
+/* HS01 modification: Change 'color' from var(--main-color) */
 .toolbarLabel {
   min-width: 16px;
   padding: 6px;
   margin: 2px;
   border: 1px solid rgba(0, 0, 0, 0);
   border-radius: 2px;
-  color: var(--main-color);
+  color: var(--mdc-theme-on-primary, white);
   font-size: 12px;
   line-height: 14px;
   text-align: left;
@@ -977,16 +1110,21 @@ a:focus > .thumbnail > .thumbnailSelectionRing,
   top: 0;
 }
 
+/* HS01 modification: Changed 'top' from 32px */
 #PDFBug {
   background: none repeat scroll 0 0 rgba(255, 255, 255, 1);
   border: 1px solid rgba(102, 102, 102, 1);
   position: fixed;
-  top: 32px;
+  top: var(--toolbar-height);
   right: 0;
   bottom: 0;
   font-size: 10px;
   padding: 0;
   width: 300px;
+}
+/* HS01 modification: Add style */
+.layout-xs #PDFBug {
+  top: var(--toolbar-height-xs);
 }
 #PDFBug .controls {
   background: rgba(238, 238, 238, 1);
@@ -1094,6 +1232,9 @@ a:focus > .thumbnail > .thumbnailSelectionRing,
   }
 
   /* Rules for browsers that don't support mozPrintCallback. */
+  /* HS01 modification: Added 'main' and 'body[data-pdfjsprinting] .mdc-drawer' selectors */
+  main,
+  body[data-pdfjsprinting] .mdc-drawer,
   #sidebarContainer,
   .toolbar,
   #loadingBox,
@@ -1103,6 +1244,12 @@ a:focus > .thumbnail > .thumbnailSelectionRing,
   }
   #viewerContainer {
     overflow: visible;
+  }
+
+  /* HS01 modification: Add style */
+  body[data-pdfjsprinting] .mdc-drawer-app-content {
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   #mainContainer,
@@ -1165,12 +1312,11 @@ a:focus > .thumbnail > .thumbnailSelectionRing,
   display: none;
 }
 
-@media all and (max-width: 900px) {
+/* HS01 modification: Add 'margin-left', remove 'display', 'margin' and 'position', change 'max-width' from 900px */
+@media all and (max-width: 1100px) {
   #toolbarViewerMiddle {
-    display: table;
-    margin: auto;
+    margin-left: 30px;
     left: auto;
-    position: inherit;
     transform: none;
   }
 }
@@ -1229,4 +1375,34 @@ a:focus > .thumbnail > .thumbnailSelectionRing,
   #scaleSelectContainer {
     display: none;
   }
+}
+
+/* HS01 modification: Add style */
+.toolbar .mdc-icon-button {
+  padding: 4px;
+  width: 36px;
+  height: 36px;
+}
+
+/* HS01 modification: Add style */
+#scaleSelect {
+  min-width: 16px;
+  width: 140px;
+  height: 28px;
+  font-family: "liberation sans";
+  font-size: 12px;
+  overflow: hidden;
+  padding-left: 4px;
+  border: none;
+  border-radius: 4px;
+  color: var(--main-color);
+  background-color: var(--dropdown-btn-bg-color);
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--field-border-color);
+  line-height: 14px;
+  user-select: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  outline: none;
 }
