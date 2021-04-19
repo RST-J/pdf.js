@@ -375,21 +375,12 @@
 }
 
 /* HS01 modification: Add style */
-.layout-xs #toolbarViewerMiddle {
-  height: var(--toolbar-height-xs);
-}
-
-/* HS01 modification: Add style */
 #toolbarViewerLeft {
   height: var(--toolbar-height);
   display: inline-flex;
   align-items: center;
 }
 
-/* HS01 modification: Add style */
-.layout-xs #toolbarViewerLeft {
-  height: var(--toolbar-height-xs);
-}
 
 /* HS01 modification: Add style */
 #toolbarViewerRight {
@@ -401,9 +392,13 @@
   margin-right: 12px;
 }
 
-/* HS01 modification: Add style */
-.layout-xs #toolbarViewerRight {
-  height: var(--toolbar-height-xs);
+/* HSO1 modification: Add style with media query for XS layout. We must use the literal value here because var() cannot be used in media queries. */
+@media all and (max-width: 599px) {
+  #toolbarViewerLeft,
+  #toolbarViewerMiddle,
+  #toolbarViewerRight {
+    height: var(--toolbar-height-xs);
+  }
 }
 
 /* HS01 modification: Remove selectors related to #toolbarViewer */
