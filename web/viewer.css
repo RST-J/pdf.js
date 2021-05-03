@@ -1182,9 +1182,10 @@ a:focus > .thumbnail > .thumbnailSelectionRing,
   }
 
   /* Rules for browsers that don't support mozPrintCallback. */
-  /* HS01 modification: Added 'main' and 'body[data-pdfjsprinting] .mdc-drawer' selectors */
+  /* HS01 modification: Added 'main', 'body[data-pdfjsprinting] .mdc-drawer' and 'body[data-pdfjsprinting] .hs-bottom-nav' selectors */
   main,
   body[data-pdfjsprinting] .mdc-drawer,
+  body[data-pdfjsprinting] .hs-bottom-nav,
   #sidebarContainer,
   .toolbar,
   #loadingBox,
